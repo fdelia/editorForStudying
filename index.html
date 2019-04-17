@@ -11,7 +11,9 @@
 <body>
 	<textarea class="content" name="example"></textarea>
 	<br/>
-	<button type="" onclick="registerWords()">register words</button><br/><br/>
+	<button type="" onclick="registerWords()">register words</button>
+	<button type="" onclick="localStorage.removeItem('registers')">delete registers</button>
+	<br/><br/>
 	<div id="currentStats" style="margin-left: 5px;"></div>
 	<div id="statsSoFar" style="margin-left: 5px;"></div>
 </body>

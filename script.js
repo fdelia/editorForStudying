@@ -11,11 +11,13 @@ function pauseStats(){
 
 	let now = new Date();
 	let pauseLength = now - oldPause;
-	//console.log(pauseLength)
-	pauses.push(pauseLength);
 
+	pauses.push(pauseLength);
 	oldPause = now;
+
+	// Debug
 	$('#currentStats').html('Pauses: ' + pauses.length)
+	$('#statsSoFar').html(pauses.join(' ') + ' ms')
 }
 
 let lastRegistration = null;
@@ -49,12 +51,12 @@ function registerWords(){
 	let registers = JSON.parse(localStorage.getItem('registers') || "{}");
 
 	// Get words without old words
-	let wordsOld = new Set(Object.values(registers).map(x => x[words]));
-	let wordsAll = Array.from(getWordsFromText($('.content').val()));
+	let wordsOld = wordsFromRegisters(registers);
+	let wordsAll = getWordsFromHtml($('.content').val());
 	
 	console.log(wordsAll)
 	console.log(wordsOld)
-	let words = wordsAll.filter(x => wordsOld.has(x));
+	let words = wordsAll.filter(x => !wordsOld.includes(x));
 	console.log(words)
 
 
@@ -66,21 +68,24 @@ function registerWords(){
 		words: words
 	}
 	console.log(registers)
-	localStorage.setItem('registers', registers)
+	localStorage.setItem('registers', JSON.stringify(registers))
 }
 
-function getWordsFromText(text){
-	let lines = text.split('</div><div>')
+function wordsFromRegisters(registers){
+	return Object.values(registers).map(x => x['words']).flat();
+}
 
-	// Strip html
-	// TODO
+function getWordsFromHtml(html){
+	let lines = html.split('</div><div>')
 
 	let words = lines.map(line => {
 		let prePart = line.split(':')[0]
 		let prePartText = stripHtml(prePart).trim()
-		return prePartText;
-	}).filter(line => line !== "");
-	return words;
+		return prePartText.split(' ');
+	})
+	.filter(word => word.length > 3)
+	.filter(word => word !== "");
+	return words.flat();
 }
 
 function stripHtml(html){
