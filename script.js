@@ -42,28 +42,38 @@ function checkIfIntervalFinished(){
 	return false;
 }
 
-let oldWords = [];
-
 function registerWords(){
 	console.log('register words and pauses ' + new Date())
-	//console.log(new Date())
 
-	let words = getWordsFromText($('.content').val())
+	// Previous "registers"/data
+	let registers = JSON.parse(localStorage.getItem('registers') || "{}");
+
+	// Get words without old words
+	let wordsOld = new Set(Object.values(registers).map(x => x[words]));
+	let wordsAll = Array.from(getWordsFromText($('.content').val()));
+	
+	console.log(wordsAll)
+	console.log(wordsOld)
+	let words = wordsAll.filter(x => wordsOld.has(x));
 	console.log(words)
 
+
 	// Register new word/lines -> save them with stats
-
 	// Timestamp, number of pauses, histogram, new words
-
-
+	let timeStamp = new Date().toISOString();
+	registers[timeStamp] = {
+		pauses: pauses,
+		words: words
+	}
+	console.log(registers)
+	localStorage.setItem('registers', registers)
 }
 
 function getWordsFromText(text){
 	let lines = text.split('</div><div>')
-	//console.log(lines)
 
 	// Strip html
-
+	// TODO
 
 	let words = lines.map(line => {
 		let prePart = line.split(':')[0]
