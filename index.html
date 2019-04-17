@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="/richtext.min.css">
 
 	<script src="/jquery.richtext.min.js" type="text/javascript" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.1.4/synaptic.js" defer></script>
 	<script src="/script.js" type="text/javascript" defer></script>
 </head>
 <body>
@@ -13,8 +14,17 @@
 	<br/>
 	<button type="" onclick="registerWords()">register words</button>
 	<button type="" onclick="localStorage.removeItem('registers')">delete registers</button>
+	<button type="" onclick="showData()">show data</button>
+	<textarea id="dataArea" style="display:none;"></textarea>
 	<br/><br/>
 	<div id="currentStats" style="margin-left: 5px;"></div>
 	<div id="statsSoFar" style="margin-left: 5px;"></div>
+
+	<br/><br/>
+	Input: time stamp as above \tab remembering quotient [0, 1]<br/>
+	<textarea id="wordRememberInput" style=""></textarea><br/>
+	<button type="" onclick="trainNetwork()">train</button>
+	<button type="" onclick="applyNetwork()">apply</button>
+	
 </body>
 </html>

@@ -48,11 +48,11 @@ function registerWords(){
 	console.log('register words and pauses ' + new Date())
 
 	// Previous "registers"/data
-	let registers = JSON.parse(localStorage.getItem('registers') || "{}");
+	let registers = Helpers.getFromStorage('registers');
 
 	// Get words without old words
-	let wordsOld = wordsFromRegisters(registers);
-	let wordsAll = getWordsFromHtml($('.content').val());
+	let wordsOld = Helpers.wordsFromRegisters(registers);
+	let wordsAll = Helpers.getWordsFromHtml($('.content').val());
 	
 	//console.log(wordsAll)
 	//console.log(wordsOld)
@@ -74,34 +74,100 @@ function registerWords(){
 	pauses = []
 }
 
-function wordsFromRegisters(registers){
-	return Object
-	.values(registers)
-	.map(x => x['words'])
-	.flat();
+function showData(){
+	let registers = Helpers.getFromStorage('registers');
+	let text = '';
+	for (timeStamp of Object.keys(registers)){
+		let value = registers[timeStamp];
+		text += `${timeStamp}\t${value.pauses.join(' ')}\t${value.words.join(' ')}\n`;
+	}
+	$('#dataArea').val(text);
+	$('#dataArea').show().focus().select();
+	setTimeout(function(){
+		$('#dataArea').hide()
+	}, 10 * 1000)
 }
 
-function getWordsFromHtml(html){
-	return html
-	.split('</div><div>')
-	.map(line => {
-		let prePartHtml = line.split(':')[0]
-		let prePartText = stripHtml(prePartHtml).trim()
-		return prePartText.split(' ');
-	})
-	.filter(word => word.length > 3)
-	.filter(word => word !== "")
-	.flat();
+function trainNetwork(){
+	// Features
+	let registers = Helpers.getFromStorage('registers');
+	let wordRememberInput = $('#wordRememberInput').val()
+		.split('\n')
+		.filter(x => x.trim().length > 0);
+	console.log(wordRememberInput)
+
+	if (Object.keys(registers).length === 0){
+		$('#currentStats').html('<span style="color:red">No registers found.</span>');
+		return;
+	}
+	if (wordRememberInput.length === 0){
+		$('#currentStats').html('<span style="color:red">No word remembering input found.</span>');
+		return;	
+	}
+
 }
 
-function stripHtml(html){
-    // Create a new div element
-    var temporalDivElement = document.createElement("div");
-    // Set the HTML content with the providen
-    temporalDivElement.innerHTML = html;
-    // Retrieve the text property of the element (cross-browser support)
-    return temporalDivElement.textContent || temporalDivElement.innerText || "";
+function applyNetwork(){
+	console.log('TODO')
 }
+
+// just to make them static (and abstract)
+class Helpers {
+	static wordsFromRegisters(registers){
+		return Object
+			.values(registers)
+			.map(x => x['words'])
+			.flat();
+	}
+
+	static getWordsFromHtml(html){
+		return html
+			.replace(';', '')
+			.split('</div><div>')
+			.map(line => {
+				let prePartHtml = line.split(':')[0]
+				let prePartText = Helpers.stripHtml(prePartHtml).trim()
+				return prePartText.split(' ');
+			})
+			.filter(word => word.length > 3)
+			.filter(word => word !== "")
+			.flat();
+	}
+
+	static stripHtml(html){
+	    // Create a new div element
+	    var temporalDivElement = document.createElement("div");
+	    // Set the HTML content with the providen
+	    temporalDivElement.innerHTML = html;
+	    // Retrieve the text property of the element (cross-browser support)
+	    return temporalDivElement.textContent || temporalDivElement.innerText || "";
+	}
+
+	static getFromStorage(varName){
+		return JSON.parse(localStorage.getItem(varName) || "{}");
+	}
+}
+
+// Init synaptic stuff
+var Neuron = synaptic.Neuron,
+	Layer = synaptic.Layer,
+	Network = synaptic.Network,
+	Trainer = synaptic.Trainer,
+	Architect = synaptic.Architect;
+
+var inputLayer = new Layer(4);
+var hiddenLayer = new Layer(6);
+var outputLayer = new Layer(2);
+
+inputLayer.project(hiddenLayer)
+hiddenLayer.project(outputLayer)
+
+var theNetwork = new Network({
+	input: inputLayer,
+	hiddenLayer: [hiddenLayer],
+	output: outputLayer
+})
+
 
 $(function(){
 	// Inits
