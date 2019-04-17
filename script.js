@@ -54,11 +54,13 @@ function registerWords(){
 	let wordsOld = wordsFromRegisters(registers);
 	let wordsAll = getWordsFromHtml($('.content').val());
 	
-	console.log(wordsAll)
-	console.log(wordsOld)
+	//console.log(wordsAll)
+	//console.log(wordsOld)
 	let words = wordsAll.filter(x => !wordsOld.includes(x));
 	console.log(words)
 
+	// Don't register if there is nothing to save
+	if (pauses.length === 0 || words.length === 0) return;
 
 	// Register new word/lines -> save them with stats
 	// Timestamp, number of pauses, histogram, new words
@@ -69,23 +71,27 @@ function registerWords(){
 	}
 	console.log(registers)
 	localStorage.setItem('registers', JSON.stringify(registers))
+	pauses = []
 }
 
 function wordsFromRegisters(registers){
-	return Object.values(registers).map(x => x['words']).flat();
+	return Object
+	.values(registers)
+	.map(x => x['words'])
+	.flat();
 }
 
 function getWordsFromHtml(html){
-	let lines = html.split('</div><div>')
-
-	let words = lines.map(line => {
-		let prePart = line.split(':')[0]
-		let prePartText = stripHtml(prePart).trim()
+	return html
+	.split('</div><div>')
+	.map(line => {
+		let prePartHtml = line.split(':')[0]
+		let prePartText = stripHtml(prePartHtml).trim()
 		return prePartText.split(' ');
 	})
 	.filter(word => word.length > 3)
-	.filter(word => word !== "");
-	return words.flat();
+	.filter(word => word !== "")
+	.flat();
 }
 
 function stripHtml(html){
@@ -98,17 +104,16 @@ function stripHtml(html){
 }
 
 $(function(){
-
+	// Inits
 	$('.content').richText();
 
+	// Events
 	$('.richText-editor').on('keyup', function(e){
-		//console.log(e.which)
-
 		if (e.which === 32 || e.which === 13) // SPACE or ENTER
 			pauseStats();
 	});
 
-	let int = setInterval(function(){
+	let intRegisterWords = setInterval(function(){
 		if (checkIfIntervalFinished())
 			registerWords();
 	}, 1000);
