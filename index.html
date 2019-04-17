@@ -13,8 +13,8 @@
 	<textarea class="content" name="example"></textarea>
 	<br/>
 	<button type="" onclick="registerWords()">register words</button>
-	<button type="" onclick="localStorage.removeItem('registers')">delete registers</button>
-	<button type="" onclick="showData()">show data</button>
+	<button type="" onclick="if (confirm('really delete?')) localStorage.removeItem('registers')">delete registers</button>
+	<button type="" onclick="showData()">show/copy timestamps</button>
 	<textarea id="dataArea" style="display:none;"></textarea>
 	<br/><br/>
 	<div id="currentStats" style="margin-left: 5px;"></div>
@@ -22,9 +22,10 @@
 
 	<br/><br/>
 	Input: time stamp as above \tab remembering quotient [0, 1]<br/>
-	<textarea id="wordRememberInput" style=""></textarea><br/>
+	<button type="" onclick="saveWordRememberData()">save</button>
 	<button type="" onclick="trainNetwork()">train</button>
 	<button type="" onclick="applyNetwork()">apply</button>
-	
+	<br/>
+	<textarea id="wordRememberInput" style="width: 300px; height: 500px;"></textarea>
 </body>
 </html>

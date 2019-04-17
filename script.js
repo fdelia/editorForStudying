@@ -79,13 +79,21 @@ function showData(){
 	let text = '';
 	for (timeStamp of Object.keys(registers)){
 		let value = registers[timeStamp];
-		text += `${timeStamp}\t${value.pauses.join(' ')}\t${value.words.join(' ')}\n`;
+		//text += `${timeStamp}\t${value.pauses.join(' ')}\t${value.words.join(' ')}\n`;
+		text += `${timeStamp}\t0.0\n`;
 	}
 	$('#dataArea').val(text);
+	$('#wordRememberInput').val(text); // <- for the moment
 	$('#dataArea').show().focus().select();
 	setTimeout(function(){
 		$('#dataArea').hide()
 	}, 10 * 1000)
+}
+
+function saveWordRememberData(){
+	let saveWordRememberData = $('#wordRememberInput').val();
+
+	
 }
 
 function trainNetwork(){
